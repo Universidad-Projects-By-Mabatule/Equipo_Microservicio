@@ -7,5 +7,7 @@ namespace EquipoAPI.Models
 {
     public class DeleteModel
     {
+        public bool IsSucces { get; set; } 
+        public string Message { get; set; }
     }
 }

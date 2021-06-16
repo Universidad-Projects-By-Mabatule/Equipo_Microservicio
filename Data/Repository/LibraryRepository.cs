@@ -1,4 +1,5 @@
 ﻿using EquipoAPI.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,31 +9,70 @@ namespace EquipoAPI.Data.Repository
 {
     public class LibraryRepository : ILibraryRepository
     {
-        private List<EquipoEntity> chocolates = new List<EquipoEntity>
+        private EquipoDbContext _dbContext;
+        public LibraryRepository(EquipoDbContext dbContext)
         {
-           new EquipoEntity(){ Id = 1, Nombre= "Manjar de Oro", Cantidad = "Sky", Type = "Blanco", Shape = "Barra", Price= 8.4m, Image="https://s1.eestatic.com/2018/11/07/actualidad/actualidad_351478872_104884997_1706x960.jpg" },
-           new EquipoEntity(){ Id = 2, Nombre= "Para Ti", Cantidad = "Snitch", Type = "Negro", Shape = "Bombon", Price= 15.5m,  Image= "https://www.ngenespanol.com/wp-content/uploads/2018/08/Los-chocolates-m%C3%A1s-ricos-del-mundo.jpg" },
-           new EquipoEntity(){ Id = 3, Nombre= "Baure",Name = "Sunnt", Type = "Con leche", Shape = "Relleno",Price= 3m, Image= "https://dam.ngenespanol.com/wp-content/uploads/2019/08/chocolate.jpg" },
-        };
-
-
-
-        public EquipoEntity CreateEquipo(EquipoEntity equipoModel)
-        {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
         }
 
-        public EquipoEntity DeleteEquipo(int equipoId)
+        public void CreateEquipo(EquipoEntity equipoModel)
         {
-            throw new NotImplementedException();
+            _dbContext.Equipos.Add(equipoModel);
         }
 
-        public EquipoEntity GetEquipo(int equipoId)
+        public async Task<EquipoEntity> GetEquipo(int equipoId)
         {
-            throw new NotImplementedException();
+            IQueryable<EquipoEntity> query = _dbContext.Equipos;
+            query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(t => t.Id == equipoId);
         }
 
-        public IEnumerable<EquipoEntity> GetEquipos(string orderBy)
+
+        public async Task<IEnumerable<EquipoEntity>> GetEquipos(string orderBy)
+        {
+            IQueryable<EquipoEntity> query = _dbContext.Equipos;
+            query = query.AsNoTracking();
+            switch (orderBy.ToLower())
+            {
+                case "name":
+                    query = query.OrderBy(t => t.Nombre);
+                    break;
+                case "pais":
+                    query = query.OrderBy(t => t.Pais);
+                    break;
+                case "cantidad":
+                    query = query.OrderBy(t => t.Cantidad);
+                    break;
+                case "entrenador":
+                    query = query.OrderBy(t => t.Entrenador);
+                    break;
+                default:
+                    query = query.OrderBy(t => t.Id);
+                    break;
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            try
+            {
+                var res = await _dbContext.SaveChangesAsync();
+                return res > 0;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+        //*******
+
+
+        public void DeleteEquipo(int equipoId)
         {
             throw new NotImplementedException();
         }

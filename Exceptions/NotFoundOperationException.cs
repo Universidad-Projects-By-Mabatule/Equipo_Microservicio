@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 
 namespace EquipoAPI.Exceptions
 {
-    public class NotFoundOperationException
+    public class NotFoundOperationException : Exception
     {
+        public NotFoundOperationException(string message)
+            : base(message)
+        {
+        }
     }
 }

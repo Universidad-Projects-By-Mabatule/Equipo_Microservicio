@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 
 namespace EquipoAPI.Exceptions
 {
-    public class BadRequestOperationException
+    public class BadRequestOperationException : Exception
     {
+        public BadRequestOperationException(string message)
+            : base(message)
+        {
+        }
     }
 }
